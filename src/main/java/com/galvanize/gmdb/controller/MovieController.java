@@ -1,29 +1,22 @@
 package com.galvanize.gmdb.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.gmdb.model.Movie;
-import com.galvanize.gmdb.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.galvanize.gmdb.service.MovieOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 public class MovieController {
 
-    private MovieService movieService;
+    private MovieOperations movieService;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieOperations movieService) {
         this.movieService = movieService;
     }
 
@@ -37,7 +30,11 @@ public class MovieController {
         }else{
             return  new ResponseEntity<List<Movie>>(movies ,HttpStatus.NO_CONTENT);
         }
+    }
 
+    @GetMapping("/gmdb/movie/{title}")
+    public Movie getMovieByTitle(@PathVariable String title){
 
+        return movieService.getMovieByTitle(title);
     }
 }

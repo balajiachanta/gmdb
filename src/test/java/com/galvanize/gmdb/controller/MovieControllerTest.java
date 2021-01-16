@@ -61,7 +61,6 @@ public class MovieControllerTest {
 
     @Test
     public void testGet_listAllMovies_whenReturn200() throws Exception {
-
         loadMovies();
         List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
                 m.getRelease(), m.getDescription(), m.getRating()))
@@ -76,9 +75,28 @@ public class MovieControllerTest {
 
     @Test
     public void testGet_listAllMovies_whenReturn204() throws Exception {
-
         mockMvc.perform(get("/gmdb/movies"))
                 .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    public void testGet_getMovie_ByTitle() throws Exception {
+        loadMovies();
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+
+        movieRepository.save(moviesList.get(0));
+
+        mockMvc.perform(get("/gmdb/movie/Rocketeer"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Rocketeer"))
+                .andExpect(jsonPath("$.director").value("Jay Light"))
+                .andExpect(jsonPath("$.actors").value("Christopher Coakley"))
+                .andExpect(jsonPath("$.release").value("2012"))
+                .andExpect(jsonPath("$.description").value("great movie"))
+                .andExpect(jsonPath("$.rating").value("6"));
 
     }
 
