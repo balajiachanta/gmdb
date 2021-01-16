@@ -2,11 +2,17 @@ package com.galvanize.gmdb.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galvanize.gmdb.entity.MovieEntity;
 import com.galvanize.gmdb.model.Movie;
+import com.galvanize.gmdb.repository.MovieRepository;
 import com.galvanize.gmdb.service.MovieService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -15,19 +21,30 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
+//@AutoConfigureTestDatabase
 public class MovieControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private MovieService movieService;
+
+    @Autowired
+    private MovieRepository movieRepository;
+
+    @BeforeEach
+    void init(){
+        movieRepository.deleteAll();
+    }
 
     List<Movie> movies;
 
@@ -46,7 +63,12 @@ public class MovieControllerTest {
     public void testGet_listAllMovies_whenReturn200() throws Exception {
 
         loadMovies();
-        when(movieService.listAllMovies()).thenReturn(movies);
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+
+        movieRepository.save(moviesList.get(0));
+
         mockMvc.perform(get("/gmdb/movies"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Rocketeer"));
@@ -55,10 +77,8 @@ public class MovieControllerTest {
     @Test
     public void testGet_listAllMovies_whenReturn204() throws Exception {
 
-        when(movieService.listAllMovies()).thenReturn(new ArrayList<>());
         mockMvc.perform(get("/gmdb/movies"))
                 .andExpect(status().isNoContent());
-                //.andExpect(jsonPath("$[1].title").value("titanic"));
 
     }
 

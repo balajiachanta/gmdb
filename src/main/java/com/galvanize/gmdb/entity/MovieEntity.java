@@ -1,6 +1,19 @@
-package com.galvanize.gmdb.model;
+package com.galvanize.gmdb.entity;
 
-public class Movie {
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "MOVIE")
+public class MovieEntity {
+
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private String title;
     private String director;
@@ -9,10 +22,10 @@ public class Movie {
     private String description;
     private String rating;
 
-    public Movie() {
+    public MovieEntity() {
     }
 
-    public Movie(String title, String director, String actors, String release, String description, String rating) {
+    public MovieEntity(String title, String director, String actors, String release, String description, String rating) {
         this.title = title;
         this.director = director;
         this.actors = actors;
