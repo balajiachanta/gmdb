@@ -3,8 +3,10 @@ package com.galvanize.gmdb.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.gmdb.entity.MovieEntity;
+import com.galvanize.gmdb.entity.Rating;
 import com.galvanize.gmdb.model.Movie;
 import com.galvanize.gmdb.repository.MovieRepository;
+import com.galvanize.gmdb.repository.RatingRepository;
 import com.galvanize.gmdb.service.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +15,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,6 +38,9 @@ public class MovieControllerTest {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private RatingRepository ratingRepository;
 
     @BeforeEach
     void init(){
@@ -94,7 +97,7 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("$.actors").value("Christopher Coakley"))
                 .andExpect(jsonPath("$.release").value("2012"))
                 .andExpect(jsonPath("$.description").value("great movie"))
-                .andExpect(jsonPath("$.rating").value("6"));
+                .andExpect(jsonPath("$.rating").value("5"));
 
     }
 
@@ -111,7 +114,7 @@ public class MovieControllerTest {
     }
 
     @Test
-    public void testUpdateMovieRating_ByTitle() throws Exception {
+    public void testGet_UpdateMovieRating_ByTitle() throws Exception {
         loadMovies();
         List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
                 m.getRelease(), m.getDescription(), m.getRating()))
@@ -128,7 +131,7 @@ public class MovieControllerTest {
 
 
     @Test
-    public void testUpdateMovieRating_ByTitle_NotFound() throws Exception {
+    public void testGet_UpdateMovieRating_ByTitle_NotFound() throws Exception {
         loadMovies();
         List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
                 m.getRelease(), m.getDescription(), m.getRating()))
@@ -143,6 +146,29 @@ public class MovieControllerTest {
 
     }
 
+    @Test
+    public void testGet_getMovie_ByTitle_CalcucateRating() throws Exception {
+        loadMovies();
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+
+        MovieEntity movieEntity = moviesList.get(0);
+
+        MovieEntity movieEntity1 = movieRepository.save(movieEntity);
+        Rating rating1 = new Rating("5","Uthir",String.valueOf(movieEntity1.getId()));
+        Rating rating2 = new Rating("5","Balaji",String.valueOf(movieEntity1.getId()));
+
+        ratingRepository.save(rating1);
+        ratingRepository.save(rating2);
+
+
+        mockMvc.perform(get("/gmdb/movie/Rocketeer"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rating").value("5.0"));
+
+
+    }
 
 
 }

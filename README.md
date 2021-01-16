@@ -63,4 +63,13 @@ Response:
     "rating": "6"
   }
 Status Code: 200
+Status Code: 404
+
+3.a
+
+Given a movie with one 5 star rating and one 3 star rating
+When I view the movie details
+Then I expect the star rating to be 4.
+
+
 </pre>

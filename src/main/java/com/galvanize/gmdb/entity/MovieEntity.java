@@ -1,11 +1,10 @@
 package com.galvanize.gmdb.entity;
 
 import lombok.Data;
+import org.springframework.lang.NonNull;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "MOVIE")
@@ -22,6 +21,9 @@ public class MovieEntity {
     private String description;
     private String rating;
 
+    //@OneToMany(mappedBy = "movieEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    //private Set<Rating> ratings;
+
     public MovieEntity() {
     }
 
@@ -32,6 +34,10 @@ public class MovieEntity {
         this.release = release;
         this.description = description;
         this.rating = rating;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -81,4 +87,12 @@ public class MovieEntity {
     public void setRating(String rating) {
         this.rating = rating;
     }
+
+//    public Set<Rating> getRatings() {
+//        return ratings;
+//    }
+//
+//    public void setRatings(Set<Rating> ratings) {
+//        this.ratings = ratings;
+//    }
 }
