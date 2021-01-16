@@ -9,27 +9,21 @@ import com.galvanize.gmdb.service.MovieService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@AutoConfigureTestDatabase
 public class MovieControllerTest {
 
     @Autowired
@@ -97,6 +91,20 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("$.release").value("2012"))
                 .andExpect(jsonPath("$.description").value("great movie"))
                 .andExpect(jsonPath("$.rating").value("6"));
+
+    }
+
+    @Test
+    public void testGet_getMovie_ByTitle_NotFound() throws Exception {
+        loadMovies();
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+
+
+        mockMvc.perform(get("/gmdb/movie/bottle"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("bottle Not Found"));
 
     }
 

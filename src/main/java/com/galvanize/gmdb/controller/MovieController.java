@@ -1,5 +1,6 @@
 package com.galvanize.gmdb.controller;
 
+import com.galvanize.gmdb.exception.MovieNotFoundException;
 import com.galvanize.gmdb.model.Movie;
 import com.galvanize.gmdb.service.MovieOperations;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class MovieController {
     }
 
     @GetMapping("/gmdb/movie/{title}")
-    public Movie getMovieByTitle(@PathVariable String title){
+    public Movie getMovieByTitle(@PathVariable String title) throws MovieNotFoundException {
 
         return movieService.getMovieByTitle(title);
     }

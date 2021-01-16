@@ -36,4 +36,7 @@ Response:
    "rating": null
    }
 
+a.
+When Movie is not found throw movie doesn't exist error
+
 </pre>
