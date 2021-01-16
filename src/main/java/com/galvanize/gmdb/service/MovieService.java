@@ -47,4 +47,21 @@ public class MovieService implements MovieOperations {
     }
 
 
+    @Override
+    public Movie updateMovieByTitle(String rating,String title) throws MovieNotFoundException {
+
+        Optional<MovieEntity> movieEntity =  movieRepository.findByTitle(title);
+        Movie movie = null;
+        if(movieEntity.isPresent()){
+            MovieEntity updateValue = movieEntity.get();
+            updateValue.setRating(rating);
+            movieRepository.save(updateValue);
+        }else{
+            //return some exception
+            throw new MovieNotFoundException(title+" Not Found");
+        }
+        return this.getMovieByTitle(title);
+    }
+
+
 }

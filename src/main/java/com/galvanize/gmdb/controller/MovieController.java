@@ -1,14 +1,13 @@
 package com.galvanize.gmdb.controller;
 
+import com.galvanize.gmdb.bean.UpdateBean;
 import com.galvanize.gmdb.exception.MovieNotFoundException;
 import com.galvanize.gmdb.model.Movie;
 import com.galvanize.gmdb.service.MovieOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,7 +34,11 @@ public class MovieController {
 
     @GetMapping("/gmdb/movie/{title}")
     public Movie getMovieByTitle(@PathVariable String title) throws MovieNotFoundException {
-
         return movieService.getMovieByTitle(title);
+    }
+
+    @PutMapping("/gmdb/movie")
+    public Movie updateMovieRatingByTitle(@RequestBody UpdateBean updateBean) throws MovieNotFoundException {
+        return movieService.updateMovieByTitle(updateBean.getRating(), updateBean.getTitle());
     }
 }

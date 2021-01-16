@@ -11,15 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -100,13 +104,45 @@ public class MovieControllerTest {
         List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
                 m.getRelease(), m.getDescription(), m.getRating()))
                 .collect(Collectors.toList());
-
-
         mockMvc.perform(get("/gmdb/movie/bottle"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("bottle Not Found"));
 
     }
+
+    @Test
+    public void testUpdateMovieRating_ByTitle() throws Exception {
+        loadMovies();
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+        movieRepository.save(moviesList.get(0));
+        Map<String,String> updateRating = new HashMap<>();
+        updateRating.put("title","Rocketeer");
+        updateRating.put("rating","8");
+        mockMvc.perform(put("/gmdb/movie").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(updateRating)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Rocketeer"))
+                .andExpect(jsonPath("$.rating").value("8"));
+    }
+
+
+    @Test
+    public void testUpdateMovieRating_ByTitle_NotFound() throws Exception {
+        loadMovies();
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+        movieRepository.save(moviesList.get(0));
+        Map<String,String> updateRating = new HashMap<>();
+        updateRating.put("title","bottle");
+        updateRating.put("rating","8");
+        mockMvc.perform(put("/gmdb/movie").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(updateRating)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("bottle Not Found"));
+
+    }
+
 
 
 }

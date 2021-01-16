@@ -9,4 +9,5 @@ public interface MovieOperations {
 
      List<Movie> listAllMovies();
      Movie getMovieByTitle(String title) throws MovieNotFoundException;
+     Movie updateMovieByTitle(String rating,String title) throws MovieNotFoundException;
 }
