@@ -3,7 +3,11 @@ package com.galvanize.gmdb.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.gmdb.model.Movie;
+import com.galvanize.gmdb.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,27 +21,23 @@ import java.util.List;
 @RestController
 public class MovieController {
 
-    List<Movie> movies;
+    private MovieService movieService;
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @PostConstruct
-    public void init() throws IOException {
-        movies = new ArrayList<>();
-        File heroFilePath = new File("src/main/resources/data/moviedata.json");
-        movies = mapper.readValue(heroFilePath, new TypeReference<List<Movie>>() {});
-
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
     }
 
     @GetMapping("/gmdb/movies")
-    public List<Movie> listAllMovies(){
+    public ResponseEntity<List<Movie>> listAllMovies(){
+        List<Movie> movies = movieService.listAllMovies();
+        ResponseEntity<List<Movie>> responseEntity = null;
+        if(!CollectionUtils.isEmpty(movies)){
+            return new ResponseEntity<List<Movie>>(movies,HttpStatus.OK);
 
-        Movie movie = new Movie();
-        movie.setTitle("titanic");
-        movies.add(movie);
+        }else{
+            return  new ResponseEntity<List<Movie>>(movies ,HttpStatus.NO_CONTENT);
+        }
 
-        return movies;
 
     }
 }
