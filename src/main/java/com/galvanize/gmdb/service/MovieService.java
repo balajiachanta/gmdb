@@ -1,5 +1,7 @@
 package com.galvanize.gmdb.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.gmdb.entity.MovieEntity;
 import com.galvanize.gmdb.entity.Rating;
 import com.galvanize.gmdb.exception.MovieNotFoundException;
@@ -9,7 +11,12 @@ import com.galvanize.gmdb.repository.RatingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +28,14 @@ public class MovieService implements MovieOperations {
     private MovieRepository movieRepository;
 
     private RatingRepository ratingRepository;
+
+    @PostConstruct
+    public void init() throws IOException {
+        MovieEntity movieEntity = new MovieEntity();
+        movieEntity.setTitle("titanic");
+        movieEntity.setRelease("1996");
+        movieRepository.save(movieEntity);
+    }
 
 
     public MovieService(MovieRepository movieRepository,RatingRepository ratingRepository) {

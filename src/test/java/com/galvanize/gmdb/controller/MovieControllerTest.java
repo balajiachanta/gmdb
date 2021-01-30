@@ -170,5 +170,23 @@ public class MovieControllerTest {
 
     }
 
+    @Test
+    public void testMovie_Rating_Insert() throws Exception {
+        loadMovies();
+        List<MovieEntity> moviesList = movies.stream().map(m -> new MovieEntity(m.getTitle(), m.getDirector(), m.getActors(),
+                m.getRelease(), m.getDescription(), m.getRating()))
+                .collect(Collectors.toList());
+
+        MovieEntity movieEntity = moviesList.get(0);
+        Rating rating1 = new Rating("3","Balaji");
+        movieEntity.setRatings(Arrays.asList(rating1));
+
+        movieRepository.save(movieEntity);
+        mockMvc.perform(get("/gmdb/movie/Rocketeer"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rating").value("5"));
+
+    }
+
 
 }

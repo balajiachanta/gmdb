@@ -1,10 +1,7 @@
 package com.galvanize.gmdb.entity;
 
-import lombok.Data;
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "MOVIE")
@@ -21,8 +18,17 @@ public class MovieEntity {
     private String description;
     private String rating;
 
-    //@OneToMany(mappedBy = "movieEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    //private Set<Rating> ratings;
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
+    }
+
+    @OneToMany(cascade =CascadeType.ALL)
+    @JoinColumn( name = "ra_fid", referencedColumnName = "id")
+    private List<Rating> ratings;
 
     public MovieEntity() {
     }
@@ -88,11 +94,4 @@ public class MovieEntity {
         this.rating = rating;
     }
 
-//    public Set<Rating> getRatings() {
-//        return ratings;
-//    }
-//
-//    public void setRatings(Set<Rating> ratings) {
-//        this.ratings = ratings;
-//    }
 }

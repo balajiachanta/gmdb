@@ -1,8 +1,8 @@
 package com.galvanize.gmdb.entity;
 
-import com.galvanize.gmdb.model.Movie;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class Rating {
@@ -15,11 +15,13 @@ public class Rating {
     private String ratedBy;
     private String movieId;
 
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "movie_id")
-//    private MovieEntity movieEntity;
 
     public Rating() {
+    }
+
+    public Rating(String rating, String ratedBy) {
+        this.rating = rating;
+        this.ratedBy = ratedBy;
     }
 
     public Rating(String rating, String ratedBy, String movieId) {
